@@ -1,4 +1,10 @@
 if [ "$ROS_INTERFACE" = "auto" ]; then
+    if ! ip route get 255.255.255.255 1>/dev/null 2>&1 ; then
+        MSG="Unable to resolve network autoconfig! Connect to a network and source ~/.bashrc"
+        echo "${MSG}" >&2
+        notify-send "ROS Network Autoconfig" "${MSG}"
+        return
+    fi
     default_route=$(ip -oneline route get 255.255.255.255 | sed 's/^.*dev \(\w*\) \+src \([0-9.]*\) .*$/\1:\2/')
     if [ ! -z "${default_route}" ]; then
         export ROS_INTERFACE=${default_route%:*}
